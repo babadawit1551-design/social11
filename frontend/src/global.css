@@ -1,0 +1,606 @@
+/* CSS Design System - SMAS Frontend */
+
+/* 1. Custom Properties */
+:root {
+  --color-primary: #0066cc;
+  --color-primary-hover: #0052a3;
+  --color-bg: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-border: #dde1e7;
+  --color-text: #1a1a2e;
+  --color-text-muted: #6b7280;
+  --color-success: #155724;
+  --color-success-bg: #d4edda;
+  --color-error: #721c24;
+  --color-error-bg: #f8d7da;
+  --radius: 6px;
+  --sidebar-width: 220px;
+}
+
+[data-theme="dark"] {
+  --color-primary: #4da6ff;
+  --color-primary-hover: #79bbff;
+  --color-bg: #0f1117;
+  --color-surface: #1a1d27;
+  --color-border: #2e3347;
+  --color-text: #e8eaf0;
+  --color-text-muted: #8b92a8;
+  --color-success: #4ade80;
+  --color-success-bg: #14532d;
+  --color-error: #f87171;
+  --color-error-bg: #450a0a;
+  --radius: 6px;
+  --sidebar-width: 220px;
+}
+
+/* 2. Reset */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* 3. Button Utilities */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.btn[disabled],
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover:not([disabled]):not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-danger {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.btn-danger:hover:not([disabled]):not(:disabled) {
+  background-color: #f1b0b7;
+}
+
+.btn-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.btn-success:hover:not([disabled]):not(:disabled) {
+  background-color: #b8dfc4;
+}
+
+/* 4. Form Classes */
+.input,
+.select,
+.textarea {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  transition: border-color 0.15s ease;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* 5. Feedback Classes */
+.alert-success {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  font-size: 0.875rem;
+}
+
+.alert-error {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  font-size: 0.875rem;
+}
+
+/* 6. Structural Classes */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.card-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  min-height: 100px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.card-link:hover {
+  background-color: var(--color-bg);
+  border-color: var(--color-primary);
+}
+
+.page-content {
+  max-width: 900px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.th {
+  text-align: left;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 2px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+/* 7. Layout Classes */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.25rem;
+  padding: 0 0.75rem;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background-color 0.15s ease;
+}
+
+.sidebar-link:hover {
+  background-color: var(--color-bg);
+}
+
+.sidebar-link.active {
+  background-color: var(--color-bg);
+  color: var(--color-primary);
+  font-weight: 600;
+  border-left: 3px solid var(--color-primary);
+  padding-left: calc(0.75rem - 3px);
+}
+
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* 8. Responsive - collapse sidebar below 768px */
+@media (max-width: 767px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.5rem 0;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+}
+
+/* 9. Login Page */
+.login-wrapper {
+  max-width: 360px;
+  margin: 4rem auto;
+  padding: 2rem;
+}
+
+/* 10. Button Block Utility */
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+
+/* 11. Form Group Utilities */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.media-upload-label {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-bg);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.media-upload-label:hover {
+  background-color: var(--color-surface);
+}
+
+.media-upload-label.uploading {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ai-generate-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ai-generate-row .input {
+  flex: 1;
+  min-width: 140px;
+}
+
+.ai-generate-row .select {
+  width: auto;
+}
+
+.platform-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.platform-row label {
+  min-width: 90px;
+}
+
+.char-count {
+  font-size: 0.875rem;
+}
+
+.media-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.compose-page {
+  max-width: 640px;
+}
+
+/* 12. Schedule Page Utilities */
+.input-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.input-row .btn {
+  white-space: nowrap;
+}
+
+.schedule-result {
+  margin-top: 1rem;
+  background: var(--color-bg);
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.card + .card,
+.card-mb {
+  margin-bottom: 2rem;
+}
+
+.input-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.card legend {
+  font-weight: bold;
+  padding: 0;
+  margin-bottom: 0.75rem;
+}
+
+/* 13. Post Body */
+.post-body {
+  white-space: pre-wrap;
+  margin-top: 0.25rem;
+}
+
+/* 14. Muted text */
+.text-muted {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* 15. Spacing Utilities */
+.btn-mt {
+  margin-top: 0.5rem;
+}
+
+/* 16. Theme Toggle */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0.75rem;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.theme-toggle:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}
+
+/* 17. Analytics Stat Cards */
+.stat-grid {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1 1 120px;
+  background: var(--color-bg);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.th-right {
+  text-align: right;
+}
+
+.td-right {
+  text-align: right;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+/* 18. Connections Page */
+.platform-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.platform-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.platform-name {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin-bottom: 0.25rem;
+}
+
+/* 19. Webhooks Page */
+.event-types-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.event-type-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.secret-box {
+  margin-top: 1.25rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.secret-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #856404;
+}
+
+.secret-code {
+  display: block;
+  word-break: break-all;
+  font-size: 0.9rem;
+  background: #fffbe6;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  border: 1px solid #ffe58f;
+}
+
+.word-break {
+  word-break: break-all;
+}
+
+.event-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.status-enabled {
+  color: var(--color-success);
+  font-weight: bold;
+}
+
+.status-disabled {
+  color: var(--color-error);
+  font-weight: bold;
+}
+
+.webhooks-section {
+  margin-top: 0;
+}
+
+.table thead tr {
+  background: var(--color-bg);
+}
+
+/* 20. Audit Logs Page */
+.alert-warning {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  align-items: end;
+}
+
+.td-mono {
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+/* 20. Audit Logs Page */
+.alert-warning {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  align-items: end;
+}
+
+.td-mono {
+  font-family: monospace;
+  font-size: 0.8rem;
+}

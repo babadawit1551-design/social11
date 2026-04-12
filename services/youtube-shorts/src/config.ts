@@ -1,0 +1,17 @@
+export const config = {
+  PORT: parseInt(process.env.PORT ?? '8005', 10),
+  DATABASE_URL: process.env.DATABASE_URL ?? '',
+  REDIS_URL: process.env.REDIS_URL ?? '',
+  SECRET_KEY: process.env.SECRET_KEY ?? '',
+  ENCRYPTION_KEY: process.env.ENCRYPTION_KEY ?? '',
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? '',
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? '',
+  GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI ?? '',
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY ?? '',
+  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY ?? '',
+  S3_BUCKET: process.env.S3_BUCKET ?? '',
+  S3_ENDPOINT: process.env.S3_ENDPOINT ?? '',
+  S3_ACCESS_KEY: process.env.S3_ACCESS_KEY ?? '',
+  S3_SECRET_KEY: process.env.S3_SECRET_KEY ?? '',
+  CDN_BASE_URL: process.env.CDN_BASE_URL ?? '',
+};

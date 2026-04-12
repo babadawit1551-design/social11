@@ -1,0 +1,341 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id                        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                      String
+  approvalWorkflowEnabled   Boolean  @default(false) @map("approval_workflow_enabled")
+  createdAt                 DateTime @default(now()) @map("created_at") @db.Timestamptz
+  users                     User[]
+
+  @@map("teams")
+}
+
+model User {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         Role
+  teamId       String?   @map("team_id") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  team         Team?     @relation(fields: [teamId], references: [id])
+  refreshTokens RefreshToken[]
+  platformConnections PlatformConnection[]
+  posts        Post[]
+  media        Media[]
+  webhooks        Webhook[]
+  auditLogs       AuditLog[]
+  youtubeChannels YouTubeChannel[]
+  videoJobs       VideoJob[]
+  shortClips      ShortClip[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  revoked   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model PlatformConnection {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String    @map("user_id") @db.Uuid
+  platform          Platform
+  accessToken       String    @map("access_token")
+  refreshToken      String?   @map("refresh_token")
+  tokenExpiresAt    DateTime? @map("token_expires_at") @db.Timestamptz
+  status            ConnectionStatus @default(active)
+  platformAccountId String    @map("platform_account_id")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platformPosts     PlatformPost[]
+
+  @@unique([userId, platform, platformAccountId])
+  @@map("platform_connections")
+}
+
+model Post {
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teamId         String?    @map("team_id") @db.Uuid
+  createdBy      String     @map("created_by") @db.Uuid
+  body           String
+  originalAiBody String?    @map("original_ai_body")
+  status         PostStatus @default(draft)
+  targetPlatforms Platform[] @map("target_platforms")
+  createdAt      DateTime   @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime   @updatedAt @map("updated_at") @db.Timestamptz
+  creator        User       @relation(fields: [createdBy], references: [id])
+  platformPosts  PlatformPost[]
+  media          Media[]
+  schedule       Schedule?
+
+  @@map("posts")
+}
+
+model PlatformPost {
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId               String             @map("post_id") @db.Uuid
+  platform             Platform
+  platformConnectionId String             @map("platform_connection_id") @db.Uuid
+  status               PlatformPostStatus @default(pending)
+  platformPostId       String?            @map("platform_post_id")
+  publishedAt          DateTime?          @map("published_at") @db.Timestamptz
+  errorMessage         String?            @map("error_message")
+  retryCount           Int                @default(0) @map("retry_count")
+  post                 Post               @relation(fields: [postId], references: [id], onDelete: Cascade)
+  platformConnection   PlatformConnection @relation(fields: [platformConnectionId], references: [id])
+  analyticsCache       AnalyticsCache?
+
+  @@map("platform_posts")
+}
+
+model Media {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId          String?  @map("post_id") @db.Uuid
+  uploaderId      String   @map("uploader_id") @db.Uuid
+  s3Key           String   @map("s3_key")
+  cdnUrl          String   @map("cdn_url")
+  mimeType        String   @map("mime_type")
+  fileSizeBytes   BigInt   @map("file_size_bytes")
+  thumbnailCdnUrl String?  @map("thumbnail_cdn_url")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  post            Post?    @relation(fields: [postId], references: [id], onDelete: SetNull)
+  uploader        User     @relation(fields: [uploaderId], references: [id])
+
+  @@map("media")
+}
+
+model Schedule {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId      String         @unique @map("post_id") @db.Uuid
+  scheduledAt DateTime       @map("scheduled_at") @db.Timestamptz
+  timezone    String
+  status      ScheduleStatus @default(pending)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  post        Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("schedules")
+}
+
+model AnalyticsCache {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  platformPostId  String       @unique @map("platform_post_id") @db.Uuid
+  impressions     BigInt       @default(0)
+  likes           BigInt       @default(0)
+  shares          BigInt       @default(0)
+  comments        BigInt       @default(0)
+  clicks          BigInt       @default(0)
+  lastRefreshedAt DateTime     @default(now()) @map("last_refreshed_at") @db.Timestamptz
+  platformPost    PlatformPost @relation(fields: [platformPostId], references: [id])
+
+  @@map("analytics_cache")
+}
+
+model Webhook {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId              String    @map("user_id") @db.Uuid
+  url                 String
+  secret              String
+  eventTypes          String[]  @map("event_types")
+  enabled             Boolean   @default(true)
+  consecutiveFailures Int       @default(0) @map("consecutive_failures")
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries          WebhookDelivery[]
+
+  @@map("webhooks")
+}
+
+model WebhookDelivery {
+  id          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  webhookId   String                @map("webhook_id") @db.Uuid
+  eventType   String                @map("event_type")
+  payload     Json
+  attempt     Int                   @default(1)
+  status      WebhookDeliveryStatus @default(pending)
+  responseCode Int?                 @map("response_code")
+  deliveredAt DateTime?             @map("delivered_at") @db.Timestamptz
+  createdAt   DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  webhook     Webhook               @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@map("webhook_deliveries")
+}
+
+model AuditLog {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  actionType   String   @map("action_type")
+  resourceType String   @map("resource_type")
+  resourceId   String   @map("resource_id") @db.Uuid
+  ipAddress    String   @map("ip_address")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+enum Role {
+  admin
+  editor
+  viewer
+}
+
+enum Platform {
+  twitter
+  linkedin
+  facebook
+  instagram
+}
+
+enum PostStatus {
+  draft
+  pending_approval
+  approved
+  rejected
+  scheduled
+  published
+  failed
+}
+
+enum PlatformPostStatus {
+  pending
+  published
+  failed
+}
+
+enum ConnectionStatus {
+  active
+  invalid
+}
+
+enum ScheduleStatus {
+  pending
+  enqueued
+  cancelled
+}
+
+enum WebhookDeliveryStatus {
+  pending
+  delivered
+  failed
+}
+
+model YouTubeChannel {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String    @map("user_id") @db.Uuid
+  googleAccountId   String    @map("google_account_id")
+  channelTitle      String    @map("channel_title")
+  thumbnailUrl      String?   @map("thumbnail_url")
+  accessTokenEnc    String    @map("access_token_enc")
+  refreshTokenEnc   String    @map("refresh_token_enc")
+  tokenExpiresAt    DateTime  @map("token_expires_at") @db.Timestamptz
+  quotaUsed         Int       @default(0) @map("quota_used")
+  quotaResetAt      DateTime  @map("quota_reset_at") @db.Timestamptz
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  videoJobs         VideoJob[]
+
+  @@unique([userId, googleAccountId])
+  @@map("youtube_channels")
+}
+
+model VideoJob {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String          @map("user_id") @db.Uuid
+  channelId        String?         @map("channel_id") @db.Uuid
+  youtubeUrl       String          @map("youtube_url")
+  status           VideoJobStatus  @default(pending)
+  maxClips         Int             @default(5) @map("max_clips")
+  minClipDuration  Int             @default(30) @map("min_clip_duration")
+  maxClipDuration  Int             @default(60) @map("max_clip_duration")
+  burnCaptions     Boolean         @default(false) @map("burn_captions")
+  transcript       Json?
+  errorReason      String?         @map("error_reason")
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime        @updatedAt @map("updated_at") @db.Timestamptz
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel          YouTubeChannel? @relation(fields: [channelId], references: [id], onDelete: SetNull)
+  clips            ShortClip[]
+  events           JobEvent[]
+
+  @@map("video_jobs")
+}
+
+model ShortClip {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  jobId          String          @map("job_id") @db.Uuid
+  userId         String          @map("user_id") @db.Uuid
+  startSeconds   Float           @map("start_seconds")
+  endSeconds     Float           @map("end_seconds")
+  title          String
+  description    String
+  viralScore     Float           @map("viral_score")
+  status         ShortClipStatus @default(pending)
+  srtContent     String?         @map("srt_content")
+  thumbnailUrl   String?         @map("thumbnail_url")
+  youtubeVideoId String?         @map("youtube_video_id")
+  youtubeUrl     String?         @map("youtube_url")
+  errorReason    String?         @map("error_reason")
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime        @updatedAt @map("updated_at") @db.Timestamptz
+  job            VideoJob        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  variants       ClipVariant[]
+
+  @@map("short_clips")
+}
+
+model ClipVariant {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clipId        String    @map("clip_id") @db.Uuid
+  s3Key         String    @map("s3_key")
+  resolution    String
+  durationSec   Float     @map("duration_sec")
+  fileSizeBytes BigInt    @map("file_size_bytes")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  clip          ShortClip @relation(fields: [clipId], references: [id], onDelete: Cascade)
+
+  @@map("clip_variants")
+}
+
+model JobEvent {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  jobId     String   @map("job_id") @db.Uuid
+  stage     String
+  status    String
+  message   String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  job       VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("job_events")
+}
+
+enum VideoJobStatus {
+  pending
+  processing
+  completed
+  failed
+  cancelled
+}
+
+enum ShortClipStatus {
+  pending
+  processing
+  rendered
+  failed
+  uploading
+  uploaded
+  upload_failed
+}

@@ -1,0 +1,102 @@
+services:
+  # ── Auth Service ────────────────────────────────────────────────────────────
+  - type: web
+    name: smas-auth
+    runtime: node
+    rootDir: .
+    buildCommand: npm install && npm run build -w shared && npm run build -w services/auth
+    startCommand: node services/auth/dist/index.js
+    envVars:
+      - key: DATABASE_URL
+        value: postgres://avnadmin:<redacted>@pg-2e7d66da-babadawit1551-aecb.h.aivencloud.com:24648/defaultdb?sslmode=require
+      - key: REDIS_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+      - key: PORT
+        value: "8001"
+
+  # ── Content Service ─────────────────────────────────────────────────────────
+  - type: web
+    name: smas-content
+    runtime: node
+    rootDir: .
+    buildCommand: npm install && npm run build -w shared && npm run build -w services/content
+    startCommand: node services/content/dist/index.js
+    envVars:
+      - key: DATABASE_URL
+        value: postgres://avnadmin:<redacted>@pg-2e7d66da-babadawit1551-aecb.h.aivencloud.com:24648/defaultdb?sslmode=require
+      - key: REDIS_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_BUCKET
+        sync: false
+      - key: PORT
+        value: "8002"
+
+  # ── Schedule Service ────────────────────────────────────────────────────────
+  - type: web
+    name: smas-schedule
+    runtime: node
+    rootDir: .
+    buildCommand: npm install && npm run build -w shared && npm run build -w services/schedule
+    startCommand: node services/schedule/dist/index.js
+    envVars:
+      - key: DATABASE_URL
+        value: postgres://avnadmin:<redacted>@pg-2e7d66da-babadawit1551-aecb.h.aivencloud.com:24648/defaultdb?sslmode=require
+      - key: REDIS_URL
+        sync: false
+      - key: RABBITMQ_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: PORT
+        value: "8003"
+
+  # ── Analytics Service ───────────────────────────────────────────────────────
+  - type: web
+    name: smas-analytics
+    runtime: node
+    rootDir: .
+    buildCommand: npm install && npm run build -w shared && npm run build -w services/analytics
+    startCommand: node services/analytics/dist/index.js
+    envVars:
+      - key: DATABASE_URL
+        value: postgres://avnadmin:<redacted>@pg-2e7d66da-babadawit1551-aecb.h.aivencloud.com:24648/defaultdb?sslmode=require
+      - key: SECRET_KEY
+        sync: false
+      - key: PORT
+        value: "8004"
+
+  # ── Publisher Worker ────────────────────────────────────────────────────────
+  - type: worker
+    name: smas-publisher
+    runtime: node
+    rootDir: .
+    buildCommand: npm install && npm run build -w shared && npm run build -w workers/publisher
+    startCommand: node workers/publisher/dist/index.js
+    envVars:
+      - key: DATABASE_URL
+        value: postgres://avnadmin:<redacted>@pg-2e7d66da-babadawit1551-aecb.h.aivencloud.com:24648/defaultdb?sslmode=require
+      - key: RABBITMQ_URL
+        sync: false
+
+  # ── Frontend ────────────────────────────────────────────────────────────────
+  - type: web
+    name: smas-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false

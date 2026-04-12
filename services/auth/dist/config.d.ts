@@ -1,0 +1,21 @@
+export declare const config: {
+    DATABASE_URL: string;
+    REDIS_URL: string;
+    SECRET_KEY: string;
+    ACCESS_TOKEN_EXPIRE_MINUTES: number;
+    REFRESH_TOKEN_EXPIRE_DAYS: number;
+    FRONTEND_URL: string;
+    ENCRYPTION_KEY: string;
+    TWITTER_CLIENT_ID: string;
+    TWITTER_CLIENT_SECRET: string;
+    TWITTER_REDIRECT_URI: string;
+    LINKEDIN_CLIENT_ID: string;
+    LINKEDIN_CLIENT_SECRET: string;
+    LINKEDIN_REDIRECT_URI: string;
+    FACEBOOK_APP_ID: string;
+    FACEBOOK_APP_SECRET: string;
+    FACEBOOK_REDIRECT_URI: string;
+    INSTAGRAM_APP_ID: string;
+    INSTAGRAM_APP_SECRET: string;
+    INSTAGRAM_REDIRECT_URI: string;
+};

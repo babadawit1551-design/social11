@@ -1,0 +1,25 @@
+{
+  "name": "smas-auth-service",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "fastify": "^4.27.0",
+    "@fastify/cors": "^9.0.1",
+    "smas-shared": "*",
+    "bcrypt": "^5.1.1",
+    "ioredis": "^5.3.2",
+    "axios": "^1.7.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^20.0.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}
