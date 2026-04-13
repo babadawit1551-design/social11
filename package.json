@@ -5,6 +5,7 @@
     "shared",
     "services/*",
     "workers/*",
+    "server",
     "frontend"
   ],
   "scripts": {
